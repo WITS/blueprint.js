@@ -214,6 +214,7 @@ $Element.prototype.element = function() {
 }
 
 function $new(sel) {
+	if (sel == null) sel = '';
 	sel = sel.trim();
 	var index = sel.indexOf(' ');
 	var child = null;
