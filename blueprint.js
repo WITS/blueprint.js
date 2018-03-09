@@ -7,13 +7,18 @@
 
 // Blueprint Element Template
 $Element = function() {
+	// Built-in Functionality
 	this.classList = new Array();
 	this.childNodes = new Array();
 	this.eventListeners = new Object();
 	this.attributes = new Object();
+	// For Extensibility
+	this.callbacks = new Array();
+	this.data = new Object();
 }
 
 $Element.prototype.tagName = 'DIV';
+$Element.prototype.name = '';
 
 $Element.prototype.class =
 $Element.prototype.classes = function(str) {
@@ -46,6 +51,12 @@ $Element.prototype.attribute = function(key, value) {
 	return this;
 }
 
+$Element.prototype.name = function(name) {
+	this.name = name;
+	// Return this, for chaining methods
+	return this;
+}
+
 $Element.prototype.on = function(type, callback) {
 	// Attempt to get the list of callbacks for this type
 	var callbacks = this.eventListeners[type];
@@ -56,6 +67,13 @@ $Element.prototype.on = function(type, callback) {
 	}
 	// Add to the list of callbacks
 	callbacks.push(callback);
+	// Return this, for chaining methods
+	return this;
+}
+
+$Element.prototype.init = function(callback) {
+	// Add to the list of callbacks
+	this.callbacks.push(callback);
 	// Return this, for chaining methods
 	return this;
 }
@@ -128,35 +146,47 @@ $Element.prototype.copy = function() {
 $Element.prototype.create =
 $Element.prototype.element = function() {
 	// Create the element
-	var res = document.createElement(this.tagName);
+	var $this = document.createElement(this.tagName);
 	// Set the classes
 	if (this.classList.length !== 0) {
-		res.className = this.classList.join(' ');
+		$this.className = this.classList.join(' ');
 	}
 	// Set the attributes
 	for (var k in this.attributes) {
-		res.setAttribute(k, this.attributes[k]);
+		$this.setAttribute(k, this.attributes[k]);
 	}
 	// Set the event listeners
 	for (var type in this.eventListeners) {
 		var callbacks = this.eventListeners[type];
 		for (var x = 0, y = callbacks.length; x < y; ++ x) {
-			res.addEventListener(type, callbacks[x]);
+			$this.addEventListener(type, callbacks[x]);
 		}
 	}
 	// Append the child nodes
+	$this.$child = {};
 	for (var x = 0, y = this.childNodes.length; x < y; ++ x) {
 		var child = this.childNodes[x];
 		if (typeof child === 'string') {
 			// Append the text node
-			res.appendChild(document.createTextNode(child));
+			$this.appendChild(document.createTextNode(child));
+		} else if (child.element) {
+			// Append the child $Element
+			if (child.name) {
+				$this.appendChild($this.$child[child.name] = child.element());
+			} else {
+				$this.appendChild(child.element());
+			}
 		} else {
-			// Append the child element
-			res.appendChild(child.element());
+			// Append the child Element
+			$this.appendChild(child);
 		}
 	}
-	// Return the result
-	return res;
+	// Execute custom code
+	for (var f of this.callbacks) {
+		f($this, this);
+	}
+	// Return the ressult
+	return $this;
 }
 
 function $new(sel) {
@@ -167,7 +197,7 @@ function $new(sel) {
 		child = $new(sel.substr(index + 1));
 		sel = sel.substr(0, index);
 	}
-	var tokens = sel.split(/([.\[=\]])/g);
+	var tokens = sel.split(/([.#\[=\]])/g);
 	var res = new $Element();
 	for (var x = 0, y = tokens.length; x < y; ++ x) {
 		var token = tokens[x];
@@ -181,12 +211,27 @@ function $new(sel) {
 				return null;
 			}
 			var next = tokens[x + 1];
-			if (next === '.' || next === '[' || next === ']' ||
-				next === '=') {
+			if (next === '.' || next === '#' || next === '[' ||
+				next === ']' || next === '=') {
 				console.error('Invalid selector: %s', sel);
 				return null;
 			}
 			res.class(next);
+			++ x;
+		} else if (token === '#') {
+			// If the token is an id operator,
+			// Check the immediate next token
+			if (x + 1 >= y) {
+				console.error('Invalid selector: %s', sel);
+				return null;
+			}
+			var next = tokens[x + 1];
+			if (next === '.' || next === '#' || next === '[' ||
+				next === ']' || next === '=') {
+				console.error('Invalid selector: %s', sel);
+				return null;
+			}
+			res.attr('id', next);
 			++ x;
 		} else if (token === '[') {
 			// If the token is an attribute operator
@@ -223,6 +268,7 @@ function $new(sel) {
 						v = v.substr(1, v.length - 2);
 					}
 					x = w;
+					break;
 				}
 			}
 			res.attr(k, v);
