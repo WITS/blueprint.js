@@ -24,7 +24,7 @@ SOFTWARE.
 
 /*
 	Blueprint.js - a simple, small DOM templating library
-	Version 0.1
+	Version 0.1.1
 	Copyright (c) 2017 Ian Jones
 */
 
@@ -216,13 +216,8 @@ $Element.prototype.element = function() {
 function $new(sel) {
 	if (sel == null) sel = '';
 	sel = sel.trim();
-	var index = sel.indexOf(' ');
+	var tokens = sel.split(/([.#\[=\] ])/g);
 	var child = null;
-	if (index !== -1) {
-		child = $new(sel.substr(index + 1));
-		sel = sel.substr(0, index);
-	}
-	var tokens = sel.split(/([.#\[=\]])/g);
 	var res = new $Element();
 	for (var x = 0, y = tokens.length; x < y; ++ x) {
 		var token = tokens[x];
@@ -296,7 +291,19 @@ function $new(sel) {
 					break;
 				}
 			}
-			res.attr(k, v);
+			// Special Case: text attribute
+			if (k === 'text') {
+				// Set the text of this element
+				res.text(v);
+			} else {
+				// Set the attribute
+				res.attr(k, v);
+			}
+		} else if (token === ' ') {
+			if (x + 1 < tokens.length) {
+				child = $new(tokens.slice(x + 1).join(''));
+			}
+			break;
 		} else {
 			// The token is a tag
 			res.tagName = token;
