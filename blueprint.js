@@ -206,8 +206,8 @@ $Element.prototype.element = function() {
 		}
 	}
 	// Execute custom code
-	for (var f of this.callbacks) {
-		f($this, this);
+	for (var x = 0, y = this.callbacks.length; x < y; ++ x) {
+		this.callbacks[x]($this, this);
 	}
 	// Return the ressult
 	return $this;
