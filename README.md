@@ -2,6 +2,10 @@
 
 blueprint.js provides a versatile function for easily creating DOM elements and element templates with highly readable code. It tiny, fast, and it doesn't try to create it's own Turing-complete language just to make DOM elements. That's what JavaScript is for.
 
+# Demo
+
+To see an example of how blueprint.js works, [check out this page](https://wits.github.io/blueprint.js/demo). The code that creates all the visible elements in the demo is [here](https://wits.github.io/blueprint.js/demo.js).
+
 # Usage
 
 ## Load blueprint.js
@@ -101,3 +105,83 @@ $new('ul').children(
 ```
 
 This will return an HTMLUListElement (`<ul>`) with three (`<li>`) children, each with distinct text.
+
+## Other methods
+
+There are several other methods that can be chained together when creating elements (in addition to `.text` and `.children`).
+
+### Set attributes
+
+Although attributes can be added in the `$new` function, they can also be added using the `attr` method. This method can be used in two ways.
+
+```js
+// $new
+$new('a[href=http://example.com]').element();
+
+// .attr(name, value)
+$new('a').attr('href', 'http://example.com').element();
+
+// .attr(JSON)
+$new('a').attr({
+    href: 'http://example.com'
+}).element();
+```
+
+
+### Set style
+
+CSS styling can be added using the `style` method. This method can be used in two ways.
+
+```js
+// .style(name, value)
+$new().style('background-color', 'red').element();
+
+// .style(JSON)
+$new().style({
+    backgroundColor: 'red'
+}).element();
+```
+
+### Add classes
+
+Although classes can be added in the `$new` function, they can also be added using the `class` method.
+
+```js
+// $new
+$new('.foo').element();
+
+// .class
+$new().class('foo').element();
+```
+
+### Set id
+
+Although the id can be set in the `$new` function, it can also be set using the `id` method.
+
+```js
+// $new
+$new('#foo').element();
+
+// .id
+$new().id('foo').element();
+```
+
+## Adding several new elements to an existing element
+
+If you need to add multiple elements to an existing element, directly. For instance, you're filling in a list `ul` element that is already in the page, you can do this all at once using the `$frag` method.
+
+```js
+// $frag
+list.appendChild($frag(
+    $new('li').text('Item #1'),
+    $new('li').text('Item #2'),
+    $new('li').text('Item #3')
+));
+
+// Without $frag
+list.appendChild($new('li').text('Item #1'));
+list.appendChild($new('li').text('Item #2'));
+list.appendChild($new('li').text('Item #3'));
+```
+
+> The `$frag` method returns a [document fragment](https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment). It can take any number of parameters (including zero) and will automatically call `.element()` on its parameters if needed.
