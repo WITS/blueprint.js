@@ -181,9 +181,9 @@ list.appendChild($frag(
 ));
 
 // Without $frag
-list.appendChild($new('li').text('Item #1'));
-list.appendChild($new('li').text('Item #2'));
-list.appendChild($new('li').text('Item #3'));
+list.appendChild($new('li').text('Item #1').element());
+list.appendChild($new('li').text('Item #2').element());
+list.appendChild($new('li').text('Item #3').element());
 ```
 
 > The `$frag` method returns a [document fragment](https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment). It can take any number of parameters (including zero) and will automatically call `.element()` on its parameters if needed.
