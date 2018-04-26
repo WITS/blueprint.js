@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				'Or create ',
 				$new('a').text('links')
 					.attr({
-						href: 'https://google.com',
+						href: 'http://example.com',
 						target: '_blank'
 					})
 			),

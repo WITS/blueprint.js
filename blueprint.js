@@ -104,6 +104,12 @@ $Element.prototype.style = function(key, value) {
 	return this;
 }
 
+$Element.prototype.id = function(id) {
+	this.attr('id', id);
+	// Return this, for chaining methods
+	return this;
+}
+
 $Element.prototype.name = function(name) {
 	this.name = name;
 	// Return this, for chaining methods
