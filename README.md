@@ -8,9 +8,11 @@ To see an example of how blueprint.js works, [check out this page](https://wits.
 
 # Usage
 
+Blueprint requires one `.js` file that's less than 15 KB, raw. (A future release will include a smaller, minified version.)
+
 ## Load blueprint.js
 
-To use blueprint.js, you simply need to load the transition.js in your page. This can be accomplished by adding the following line to your `<head>` element:
+To use blueprint.js, you simply need to load one script in your page. This can be accomplished by adding the following line to your `<head>` element:
 
 ```html
 <script src='https://wits.github.io/blueprint.js/blueprint.js'></script>
