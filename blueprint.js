@@ -24,7 +24,7 @@ SOFTWARE.
 
 /*
 	Blueprint.js - a simple, small DOM templating library
-	Version 0.1.1
+	Version 0.2.0
 	Copyright (c) 2017 Ian Jones
 */
 
@@ -36,6 +36,7 @@ $Element = function() {
 	this.childNodes = new Array();
 	this.eventListeners = new Object();
 	this.attributes = new Object();
+	this.styleData = new Object();
 	// For Extensibility
 	this.callbacks = new Array();
 	this.data = new Object();
@@ -70,7 +71,35 @@ $Element.prototype.classes = function(str) {
 
 $Element.prototype.attr =
 $Element.prototype.attribute = function(key, value) {
-	this.attributes[key] = value;
+	// JSON
+	if (arguments.length === 1 && key instanceof Object) {
+		for (var k in key) {
+			this.attributes[k] = key[k];
+		}
+	} else {
+		this.attributes[key] = value;
+	}
+	// Return this, for chaining methods
+	return this;
+}
+
+$Element.prototype.style = function(key, value) {
+	// JSON
+	if (arguments.length === 1 && key instanceof Object) {
+		for (var k in key) {
+			this.styleData[
+				k.replace(/-(\w?)/g, function(match, p1) {
+					return p1.toUpperCase();
+				})
+			] = key[k];
+		}
+	} else {
+		this.styleData[
+			key.replace(/-(\w?)/g, function(match, p1) {
+				return p1.toUpperCase();
+			})
+		] = value;
+	}
 	// Return this, for chaining methods
 	return this;
 }
@@ -178,6 +207,10 @@ $Element.prototype.element = function() {
 	// Set the attributes
 	for (var k in this.attributes) {
 		$this.setAttribute(k, this.attributes[k]);
+	}
+	// Set style
+	for (var k in this.styleData) {
+		$this.style[k] = this.styleData[k];
 	}
 	// Set the event listeners
 	for (var type in this.eventListeners) {
@@ -312,5 +345,18 @@ function $new(sel) {
 	// If there is a child, append it
 	if (child !== null) res.append(child);
 	// Return the template
+	return res;
+}
+
+function $frag() {
+	var res = document.createDocumentFragment();
+	for (var x = 0, y = arguments.length; x < y; ++ x) {
+		var arg = arguments[x];
+		if (arg instanceof $Element) {
+			res.appendChild(arg.element());
+		} else {
+			res.appendChild(arg);
+		}
+	}
 	return res;
 }
