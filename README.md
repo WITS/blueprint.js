@@ -170,7 +170,7 @@ $new().id('foo').element();
 
 ## Adding several new elements to an existing element
 
-If you need to add multiple elements to an existing element, directly. For instance, you're filling in a list `ul` element that is already in the page, you can do this all at once using the `$frag` method.
+If you need to add multiple elements to an existing element directly, you can do so with the `$frag` method. (For instance, if you're filling in a list `ul` element that is already in the page.)
 
 ```js
 // $frag
