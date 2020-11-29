@@ -24,7 +24,7 @@ SOFTWARE.
 
 /*
 	Blueprint.js - a simple, small DOM templating library
-	Version 0.2.0
+	Version 0.2.1
 	Copyright (c) 2017 Ian Jones
 */
 
