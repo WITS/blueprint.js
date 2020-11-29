@@ -181,7 +181,7 @@ $Element.prototype.copy = function() {
 		res.classList.push(this.classList[x]);
 	}
 	for (var k in this.attributes) {
-		res.attributes.push(this.attributes[k]);
+		res.attributes[k] = this.attributes[k];
 	}
 	for (var type in this.eventListeners) {
 		var src = this.eventListeners[type];
@@ -198,6 +198,7 @@ $Element.prototype.copy = function() {
 			res.childNodes.push(child.clone());
 		}
 	}
+	res.data = Object.assign({}, this.data);
 	// Return the copy
 	return res;
 }
