@@ -31,4 +31,20 @@ document.addEventListener('DOMContentLoaded', function() {
 		)
 		.element()
 	);
+	
+	var CardBlueprint =
+		$new('.card')
+			.text('My name is ')
+			.prepare(($this, props) => {
+				var name = props.name;
+				$this.text(name);
+				$this.attr('data-name', name);
+				return $this;
+			});
+	
+	document.body.appendChild($frag(
+		$new('h2').text('Create re-usable blueprints and pass in props to create dynamic elements'),
+		CardBlueprint.element({ name: 'Ian' }),
+		CardBlueprint.element({ name: 'Bret' }),
+	));
 });
