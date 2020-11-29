@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener('DOMContentLoaded', function() {
 	document.body.appendChild($frag(
 		$new('h1')
 			.text('Add multiple elements easily')
@@ -17,8 +17,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			listStyle: 'none'
 		})
 		.children(
-			$new('li').text("Create lists"),
-			$new('li').text("And style them"),
+			$new('li').text('Create lists'),
+			$new('li').text('And style them'),
 			$new('li').children(
 				'Or create ',
 				$new('a').text('links')
