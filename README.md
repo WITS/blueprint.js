@@ -187,3 +187,64 @@ list.appendChild($new('li').text('Item #3').element());
 ```
 
 > The `$frag` method returns a [document fragment](https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment). It can take any number of parameters (including zero) and will automatically call `.element()` on its parameters if needed.
+
+## Blueprints are reusable
+
+Every blueprint you make returns an object that can be reused. This means you can make multiple DOM elements from the same blueprint!
+
+```js
+// Create a blueprint
+var cardBlueprint = $new('.card').text('This is a card');
+
+document.body.appendChild(cardBlueprint.element());
+document.body.appendChild(cardBlueprint.element());
+document.body.appendChild(cardBlueprint.element());
+```
+
+If you want to allow each generated element to be different, you might be tempted to do the following:
+
+```js
+// This is dangerous and could introduce bugs to your code! Try out this example to see what strange side-effects you get
+var cardBlueprint = $new('.card');
+
+cardBlueprint.text('This is a card.');
+document.body.appendChild(cardBlueprint.element());
+
+cardBlueprint.text('This is a second card!');
+document.body.appendChild(cardBlueprint.element());
+
+cardBlueprint.text('Three cards?!');
+document.body.appendChild(cardBlueprint.element());
+```
+
+The issue with the above is that each call to `text()` modifies the actual blueprint object. In this case, `text()` appends an additional text DOM child each time it's called, with the third and final card having the text "This is a card.This is a second card!Three cards?!" contained within it.
+
+### Using `prepare()` to dynamically change the generated DOM element
+
+What we can do instead is create a slightly different version of this code, using `prepare()`. This method takes a callback function as its sole argument, which then allows you to modify each "instance" of the blueprint without introducing side-effects to the other elements.
+
+Here's how we could rewrite the above snippet using prepare:
+
+```js
+// This is dangerous and could introduce bugs to your code! Try out this example to see what strange side-effects you get
+var cardBlueprint = $new('.card').prepare(function($this, props) {
+	$this.text(props.cardText);
+	return $this;
+});
+
+document.body.appendChild(cardBlueprint.element({
+	cardText: 'This is a card.'
+}));
+
+cardBlueprint.text();
+document.body.appendChild(cardBlueprint.element({
+	cardText: 'This is a second card!'
+}));
+
+cardBlueprint.text();
+document.body.appendChild(cardBlueprint.element({
+	cardText: 'Three cards?!'
+}));
+```
+
+When using this advanced feature, the basic rule of thumb is to directly modify your blueprint if you want that change to apply to all of the elements you plan on creating, and to use `prepare()` for anything that is dynamic between elements.
