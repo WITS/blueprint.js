@@ -203,8 +203,20 @@ $Element.prototype.copy = function() {
 	return res;
 }
 
+$Element.prototype.prepare = function(callback) {
+	this.data.prepare = callback;
+	return this;
+}
+
 $Element.prototype.create =
-$Element.prototype.element = function() {
+$Element.prototype.element = function(props) {
+	if (this.data.prepare !== undefined) {
+		return this.data.prepare(this.copy(), props)._createElement();
+	}
+	return this._createElement();
+}
+
+$Element.prototype._createElement = function() {
 	// Create the element
 	var $this = document.createElement(this.tagName);
 	// Set the classes
