@@ -24,7 +24,7 @@ SOFTWARE.
 
 /*
 	Blueprint.js - a simple, small DOM templating library
-	Version 0.2.0
+	Version 0.2.1
 	Copyright (c) 2017 Ian Jones
 */
 
@@ -37,6 +37,7 @@ $Element = function() {
 	this.eventListeners = new Object();
 	this.attributes = new Object();
 	this.styleData = new Object();
+	this.prepareCallbacks = new Array();
 	// For Extensibility
 	this.callbacks = new Array();
 	this.data = new Object();
@@ -181,7 +182,7 @@ $Element.prototype.copy = function() {
 		res.classList.push(this.classList[x]);
 	}
 	for (var k in this.attributes) {
-		res.attributes.push(this.attributes[k]);
+		res.attributes[k] = this.attributes[k];
 	}
 	for (var type in this.eventListeners) {
 		var src = this.eventListeners[type];
@@ -198,12 +199,32 @@ $Element.prototype.copy = function() {
 			res.childNodes.push(child.clone());
 		}
 	}
+	for (var x = 0, y = this.prepareCallbacks.length; x < y; ++ x) {
+		res.prepareCallbacks.push(this.prepareCallbacks[x]);
+	}
+	Object.assign(res.data, this.data);
 	// Return the copy
 	return res;
 }
 
+$Element.prototype.prepare = function(callback) {
+	this.prepareCallbacks.push(callback);
+	return this;
+}
+
 $Element.prototype.create =
-$Element.prototype.element = function() {
+$Element.prototype.element = function(props) {
+	var $this = this;
+	if ($this.prepareCallbacks.length > 0) {
+		$this = $this.copy();
+		for (var x = 0, y = $this.prepareCallbacks.length; x < y; ++ x) {
+			$this.prepareCallbacks[x]($this, props);
+		}
+	}
+	return $this._createElement();
+}
+
+$Element.prototype._createElement = function() {
 	// Create the element
 	var $this = document.createElement(this.tagName);
 	// Set the classes
