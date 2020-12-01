@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
 				var name = props.name;
 				$this.text(name);
 				$this.attr('data-name', name);
-				return $this;
 			});
 	
 	document.body.appendChild($frag(

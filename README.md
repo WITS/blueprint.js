@@ -221,7 +221,7 @@ The issue with the above is that each call to `text()` modifies the actual bluep
 
 ### Using `prepare()` to dynamically change the generated DOM element
 
-What we can do instead is create a slightly different version of this code, using `prepare()`. This method takes a callback function as its sole argument, which then allows you to modify each "instance" of the blueprint without introducing side-effects to the other elements.
+What we can do instead is create a slightly different version of this code, using `prepare()`. This method takes a callback function as its sole argument, which then allows you to modify each "instance" of the blueprint without introducing side-effects to the other elements. You can even add multiple `prepare()` calls to a blueprint!
 
 Here's how we could rewrite the above snippet using prepare:
 
@@ -229,7 +229,6 @@ Here's how we could rewrite the above snippet using prepare:
 // This is dangerous and could introduce bugs to your code! Try out this example to see what strange side-effects you get
 var cardBlueprint = $new('.card').prepare(function($this, props) {
 	$this.text(props.cardText);
-	return $this;
 });
 
 document.body.appendChild(cardBlueprint.element({

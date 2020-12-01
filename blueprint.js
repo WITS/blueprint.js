@@ -37,6 +37,7 @@ $Element = function() {
 	this.eventListeners = new Object();
 	this.attributes = new Object();
 	this.styleData = new Object();
+	this.prepareCallbacks = new Array();
 	// For Extensibility
 	this.callbacks = new Array();
 	this.data = new Object();
@@ -198,22 +199,29 @@ $Element.prototype.copy = function() {
 			res.childNodes.push(child.clone());
 		}
 	}
-	res.data = Object.assign({}, this.data);
+	for (var x = 0, y = this.prepareCallbacks.length; x < y; ++ x) {
+		res.prepareCallbacks.push(this.prepareCallbacks[x]);
+	}
+	Object.assign(res.data, this.data);
 	// Return the copy
 	return res;
 }
 
 $Element.prototype.prepare = function(callback) {
-	this.data.prepare = callback;
+	this.prepareCallbacks.push(callback);
 	return this;
 }
 
 $Element.prototype.create =
 $Element.prototype.element = function(props) {
-	if (this.data.prepare !== undefined) {
-		return this.data.prepare(this.copy(), props)._createElement();
+	var $this = this;
+	if (this.prepareCallbacks.length > 0) {
+		$this = $this.copy();
+		for (var x = 0, y = this.prepareCallbacks.length; x < y; ++ x) {
+			$this.prepareCallbacks[x]($this, props);
+		}
 	}
-	return this._createElement();
+	return $this._createElement();
 }
 
 $Element.prototype._createElement = function() {
