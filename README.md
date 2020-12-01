@@ -226,7 +226,6 @@ What we can do instead is create a slightly different version of this code, usin
 Here's how we could rewrite the above snippet using prepare:
 
 ```js
-// This is dangerous and could introduce bugs to your code! Try out this example to see what strange side-effects you get
 var cardBlueprint = $new('.card').prepare(function($this, props) {
 	$this.text(props.cardText);
 });
@@ -235,12 +234,10 @@ document.body.appendChild(cardBlueprint.element({
 	cardText: 'This is a card.'
 }));
 
-cardBlueprint.text();
 document.body.appendChild(cardBlueprint.element({
 	cardText: 'This is a second card!'
 }));
 
-cardBlueprint.text();
 document.body.appendChild(cardBlueprint.element({
 	cardText: 'Three cards?!'
 }));
