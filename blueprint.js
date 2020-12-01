@@ -215,9 +215,9 @@ $Element.prototype.prepare = function(callback) {
 $Element.prototype.create =
 $Element.prototype.element = function(props) {
 	var $this = this;
-	if (this.prepareCallbacks.length > 0) {
+	if ($this.prepareCallbacks.length > 0) {
 		$this = $this.copy();
-		for (var x = 0, y = this.prepareCallbacks.length; x < y; ++ x) {
+		for (var x = 0, y = $this.prepareCallbacks.length; x < y; ++ x) {
 			$this.prepareCallbacks[x]($this, props);
 		}
 	}
